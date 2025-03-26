@@ -1,0 +1,33 @@
+import requests
+import matplotlib.pyplot as plt
+
+# Replace with your actual API key
+api_key = "09b18fb9e73ca5e717e1ec24ffa884f7"
+city = "Daund"
+country_code = "IN"  # India
+
+base_url = "http://api.openweathermap.org/data/2.5/forecast?"
+complete_url = base_url + "appid=" + api_key + "&q=" + city + "," + country_code + "&units=metric"
+
+response = requests.get(complete_url)
+response.raise_for_status()  # Raise an exception for bad status codes
+
+data = response.json()
+
+if data["cod"] != "200":
+    print(f"Error fetching data: {data['message']}")
+else:
+    temperatures = []
+    timestamps = []
+    for item in data["list"]:
+        temperatures.append(item["main"]["temp"])
+        timestamps.append(item["dt_txt"])
+    plt.figure(figsize=(10, 6))
+    plt.plot(timestamps, temperatures, marker='o', linestyle='-')
+    plt.title(f"Temperature Forecast for {city}, {country_code}")
+    plt.xlabel("Time")
+    plt.ylabel("Temperature (°C)")
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
